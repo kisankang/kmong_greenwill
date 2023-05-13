@@ -89,8 +89,8 @@ class MainPage extends GetWidget<MainController> {
                                 mainAxisSize: MainAxisSize.min,
                                 children: [
                                   Text(key),
-                                  Text(
-                                      DummyData.tempMap[key].toString() + '°C'),
+                                  Text(controller.tempMapData[key].toString() +
+                                      '°C'),
                                 ],
                               ),
                             );
@@ -117,7 +117,8 @@ class MainPage extends GetWidget<MainController> {
                                 mainAxisSize: MainAxisSize.min,
                                 children: [
                                   Text(key),
-                                  Text(DummyData.tempMap[key].toString() + '%'),
+                                  Text(controller.humMapData[key].toString() +
+                                      '%'),
                                 ],
                               ),
                             );
@@ -231,6 +232,10 @@ class MainPage extends GetWidget<MainController> {
               const Text('시작'),
               SizedBox(
                 child: TimePickerSpinner(
+                  itemWidth: 40,
+                  normalTextStyle: TextStyle(fontSize: 24),
+                  highlightedTextStyle: TextStyle(fontSize: 24),
+                  is24HourMode: false,
                   itemHeight: 30,
                   time: controller.ledSettingData.value.startTime,
                   onTimeChange: (DateTime t) =>
@@ -239,12 +244,16 @@ class MainPage extends GetWidget<MainController> {
               ),
             ],
           ),
-          const SizedBox(width: 40),
+          const SizedBox(width: 5),
           Column(
             children: [
               const Text('종료'),
               SizedBox(
                 child: TimePickerSpinner(
+                  itemWidth: 40,
+                  normalTextStyle: TextStyle(fontSize: 24),
+                  highlightedTextStyle: TextStyle(fontSize: 24),
+                  is24HourMode: false,
                   itemHeight: 30,
                   time: controller.ledSettingData.value.endTime,
                   onTimeChange: (DateTime t) =>

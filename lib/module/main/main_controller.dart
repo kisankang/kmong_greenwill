@@ -104,10 +104,22 @@ class MainController extends GetxController {
     });
   }
 
+  Map<String, dynamic> _sortMap(Map<String, dynamic> mapData) {
+    List<MapEntry<String, dynamic>> listMappedEntries =
+        mapData.entries.toList();
+
+    listMappedEntries.sort((a, b) => b.key.compareTo(a.key));
+
+    final Map<String, dynamic> sortedMapData =
+        Map.fromEntries(listMappedEntries);
+
+    return sortedMapData;
+  }
+
   @override
   Future<void> onInit() async {
     super.onInit();
-    tempMapData = await _firebaseService.getTempData();
-    humMapData = await _firebaseService.getHumData();
+    tempMapData = _sortMap(await _firebaseService.getTempData());
+    humMapData = _sortMap(await _firebaseService.getHumData());
   }
 }
