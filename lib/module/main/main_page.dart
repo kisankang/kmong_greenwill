@@ -47,8 +47,9 @@ class MainPage extends GetWidget<MainController> {
           } else {
             if (controller.motorSettingData.value.isAuto) {
               return _motorTimePicker();
-            } else {}
-            return _onOffSettingButton();
+            } else {
+              return _onOffSettingButton();
+            }
           }
         }),
         Expanded(child: Container()),
