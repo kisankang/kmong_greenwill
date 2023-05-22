@@ -286,7 +286,7 @@ class MainPage extends GetWidget<MainController> {
               const Text('작동 시간'),
               TimePickerSpinner(
                 itemHeight: 30,
-                time: controller.motorSettingData.value.wrokingTIme,
+                time: controller.motorSettingData.value.workingTime,
                 onTimeChange: (DateTime t) =>
                     controller.onChangedMotorWorkingPicker(t),
               ),

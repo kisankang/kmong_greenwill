@@ -5,10 +5,10 @@
 // 'flutter create' template.
 
 // The application's name. By default this is also the title of the Flutter window.
-PRODUCT_NAME = greenwillmanager
+PRODUCT_NAME = green-terrarium;
 
 // The application's bundle identifier
-PRODUCT_BUNDLE_IDENTIFIER = greenwill.com.greenwillmanager
+PRODUCT_BUNDLE_IDENTIFIER = greenwall.com.terraium;
 
 // The copyright displayed in application information
 PRODUCT_COPYRIGHT = Copyright © 2023 greenwill.com. All rights reserved.

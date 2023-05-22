@@ -15,17 +15,20 @@ class MainController extends GetxController {
   Rx<bool> isLedSettingMode = true.obs;
 
   Rx<LedSettingData> ledSettingData = Rx(LedSettingData(
-      isAuto: false,
-      isOn: false,
-      startTime: DateTime.now().copyWith(hour: 0, minute: 0),
-      endTime: DateTime.now().copyWith(hour: 0, minute: 0),
-      brightness: 50));
+    isAuto: false,
+    isOn: false,
+    startTime: DateTime.now().copyWith(hour: 0, minute: 0),
+    endTime: DateTime.now().copyWith(hour: 0, minute: 0),
+    brightness: 50,
+    isWrite: 1,
+  ));
 
   Rx<MotorSettingData> motorSettingData = Rx(MotorSettingData(
     isAuto: false,
     isOn: false,
     periodTime: DateTime.now().copyWith(hour: 0, minute: 0),
-    wrokingTIme: DateTime.now().copyWith(hour: 0, minute: 0),
+    workingTime: DateTime.now().copyWith(hour: 0, minute: 0),
+    isWrite: 1,
   ));
 
   onTapSendButton() {
@@ -94,7 +97,7 @@ class MainController extends GetxController {
 
   onChangedMotorWorkingPicker(DateTime t) {
     motorSettingData.update((val) {
-      val?.wrokingTIme = t;
+      val?.workingTime = t;
     });
   }
 

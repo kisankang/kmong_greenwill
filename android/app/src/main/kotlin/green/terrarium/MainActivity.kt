@@ -1,4 +1,4 @@
-package greenwill.com.greenwillmanager
+package green.terrarium
 
 import io.flutter.embedding.android.FlutterActivity
 

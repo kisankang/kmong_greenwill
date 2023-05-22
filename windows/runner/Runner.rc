@@ -90,12 +90,12 @@ BEGIN
         BLOCK "040904e4"
         BEGIN
             VALUE "CompanyName", "greenwill.com" "\0"
-            VALUE "FileDescription", "greenwillmanager" "\0"
+            VALUE "FileDescription", "green-terrarium" "\0"
             VALUE "FileVersion", VERSION_AS_STRING "\0"
-            VALUE "InternalName", "greenwillmanager" "\0"
+            VALUE "InternalName", "green-terrarium" "\0"
             VALUE "LegalCopyright", "Copyright (C) 2023 greenwill.com. All rights reserved." "\0"
             VALUE "OriginalFilename", "greenwillmanager.exe" "\0"
-            VALUE "ProductName", "greenwillmanager" "\0"
+            VALUE "ProductName", "green-terrarium" "\0"
             VALUE "ProductVersion", VERSION_AS_STRING "\0"
         END
     END

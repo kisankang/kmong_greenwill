@@ -13,6 +13,7 @@ LedSettingData _$LedSettingDataFromJson(Map<String, dynamic> json) =>
       startTime: DateTime.parse(json['startTime'] as String),
       endTime: DateTime.parse(json['endTime'] as String),
       brightness: (json['brightness'] as num).toDouble(),
+      isWrite: json['isWrite'] as int,
     );
 
 Map<String, dynamic> _$LedSettingDataToJson(LedSettingData instance) =>
@@ -22,4 +23,5 @@ Map<String, dynamic> _$LedSettingDataToJson(LedSettingData instance) =>
       'startTime': instance.startTime.toIso8601String(),
       'endTime': instance.endTime.toIso8601String(),
       'brightness': instance.brightness,
+      'isWrite': instance.isWrite,
     };
