@@ -25,10 +25,17 @@ class LedSettingData {
       _$LedSettingDataFromJson(json);
   Map<String, dynamic> toJson() => _$LedSettingDataToJson(this);
 
-  Map<String, dynamic> toJsonForRTDB() {
+  Map<String, dynamic> toRTDB() {
     Map<String, dynamic> json = _$LedSettingDataToJson(this);
-    json['startTime'] = ParseTime.forRTDB(startTime);
-    json['endTime'] = ParseTime.forRTDB(endTime);
+    json['startTime'] = ParseTime.toRTDB(startTime);
+    json['endTime'] = ParseTime.toRTDB(endTime);
     return json;
+  }
+
+  static LedSettingData fromRTDB(Map<String, dynamic> json) {
+    json['startTime'] = ParseTime.fromRTDB(json['startTime']).toIso8601String();
+    json['endTime'] = ParseTime.fromRTDB(json['endTime']).toIso8601String();
+    LedSettingData fromJson = _$LedSettingDataFromJson(json);
+    return fromJson;
   }
 }

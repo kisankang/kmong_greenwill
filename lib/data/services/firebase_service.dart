@@ -2,7 +2,6 @@ import 'package:get/get.dart';
 import 'package:greenwillmanager/data/models/led_setting_data.dart';
 import 'package:greenwillmanager/data/models/motor_setting_data.dart';
 import 'package:greenwillmanager/data/repositories/firebase_repository.dart';
-import 'package:greenwillmanager/utils/parse_time.dart';
 
 class FirebaseService extends GetxService {
   final FirebaseRepository _firebaseRepository;
@@ -10,12 +9,21 @@ class FirebaseService extends GetxService {
       : _firebaseRepository = firebaseRepository;
 
   sendLedSetting(LedSettingData ledSettingData) async {
-    await _firebaseRepository.sendLedSetting(ledSettingData.toJsonForRTDB());
+    ledSettingData.isWrite = 1;
+    await _firebaseRepository.sendLedSetting(ledSettingData.toRTDB());
   }
 
   sendMotorSetting(MotorSettingData motorSettingData) async {
-    await _firebaseRepository
-        .sendMotorSetting(motorSettingData.toJsonForRTDB());
+    motorSettingData.isWrite = 1;
+    await _firebaseRepository.sendMotorSetting(motorSettingData.toRTDB());
+  }
+
+  Future<LedSettingData?> getLedSetting() async {
+    return await _firebaseRepository.getLedSetting();
+  }
+
+  Future<MotorSettingData?> getMotorSetting() async {
+    return await _firebaseRepository.getMotorSetting();
   }
 
   sendTempData(Map<String, dynamic> json) async {
@@ -32,5 +40,9 @@ class FirebaseService extends GetxService {
 
   getHumData() async {
     return await _firebaseRepository.getHumData();
+  }
+
+  Future<bool> isExistId(String id) async {
+    return await _firebaseRepository.isExistId(id);
   }
 }

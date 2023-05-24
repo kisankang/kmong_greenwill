@@ -1,8 +1,10 @@
+import 'dart:convert';
+
+import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_time_picker_spinner/flutter_time_picker_spinner.dart';
 import 'package:get/get.dart';
 import 'package:greenwillmanager/module/main/main_controller.dart';
-import 'package:greenwillmanager/utils/dummy_data.dart';
 import 'package:sleek_circular_slider/sleek_circular_slider.dart';
 
 class MainPage extends GetWidget<MainController> {
@@ -12,7 +14,15 @@ class MainPage extends GetWidget<MainController> {
         Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            const Text('그린윌 관리앱'),
+            Row(
+              children: [
+                IconButton(
+                  onPressed: controller.onPressBackButton,
+                  icon: const Icon(Icons.arrow_back),
+                ),
+                const Text('그린윌 관리앱'),
+              ],
+            ),
             ElevatedButton.icon(
               onPressed: () {
                 controller.isSettingMode.toggle();
@@ -76,27 +86,42 @@ class MainPage extends GetWidget<MainController> {
                 child: Column(
                   children: [
                     const Text('온도'),
-                    Expanded(
-                      child: ListView.builder(
-                          itemCount: controller.tempMapData.length,
-                          itemBuilder: (context, index) {
-                            String key =
-                                controller.tempMapData.keys.toList()[index];
-                            return Container(
-                              padding: const EdgeInsets.all(10),
-                              margin: const EdgeInsets.all(5),
-                              color: Colors.grey[200],
-                              child: Column(
-                                mainAxisSize: MainAxisSize.min,
-                                children: [
-                                  Text(key),
-                                  Text(controller.tempMapData[key].toString() +
-                                      '°C'),
-                                ],
-                              ),
-                            );
-                          }),
-                    ),
+                    StreamBuilder(
+                        stream:
+                            controller.firebaseRepository.tempDataRef.onValue,
+                        builder: (BuildContext context,
+                            AsyncSnapshot<DatabaseEvent> snapshot) {
+                          if (!snapshot.hasData) {
+                            return const Center(child: Text('데이터가 없습니다'));
+                          } else {
+                            Map<String, dynamic>? data = jsonDecode(
+                                jsonEncode(snapshot.data?.snapshot.value));
+                            data = controller.sortMap(data);
+                            if (data == null) {
+                              return const Center(child: Text('데이터가 없습니다'));
+                            } else {
+                              return Expanded(
+                                child: ListView.builder(
+                                    itemCount: data.length,
+                                    itemBuilder: (context, index) {
+                                      String key = data!.keys.toList()[index];
+                                      return Container(
+                                        padding: const EdgeInsets.all(10),
+                                        margin: const EdgeInsets.all(5),
+                                        color: Colors.grey[200],
+                                        child: Column(
+                                          mainAxisSize: MainAxisSize.min,
+                                          children: [
+                                            Text(key),
+                                            Text(data[key].toString() + '°C'),
+                                          ],
+                                        ),
+                                      );
+                                    }),
+                              );
+                            }
+                          }
+                        }),
                   ],
                 ),
               ),
@@ -104,27 +129,42 @@ class MainPage extends GetWidget<MainController> {
                 child: Column(
                   children: [
                     const Text('습도'),
-                    Expanded(
-                      child: ListView.builder(
-                          itemCount: controller.humMapData.length,
-                          itemBuilder: (context, index) {
-                            String key =
-                                controller.humMapData.keys.toList()[index];
-                            return Container(
-                              padding: const EdgeInsets.all(10),
-                              margin: const EdgeInsets.all(5),
-                              color: Colors.grey[200],
-                              child: Column(
-                                mainAxisSize: MainAxisSize.min,
-                                children: [
-                                  Text(key),
-                                  Text(controller.humMapData[key].toString() +
-                                      '%'),
-                                ],
-                              ),
-                            );
-                          }),
-                    ),
+                    StreamBuilder(
+                        stream:
+                            controller.firebaseRepository.humDataRef.onValue,
+                        builder: (BuildContext context,
+                            AsyncSnapshot<DatabaseEvent> snapshot) {
+                          if (!snapshot.hasData) {
+                            return const Center(child: Text('데이터가 없습니다'));
+                          } else {
+                            Map<String, dynamic>? data = jsonDecode(
+                                jsonEncode(snapshot.data?.snapshot.value));
+                            data = controller.sortMap(data);
+                            if (data == null) {
+                              return const Center(child: Text('데이터가 없습니다'));
+                            } else {
+                              return Expanded(
+                                child: ListView.builder(
+                                    itemCount: data.length,
+                                    itemBuilder: (context, index) {
+                                      String key = data!.keys.toList()[index];
+                                      return Container(
+                                        padding: const EdgeInsets.all(10),
+                                        margin: const EdgeInsets.all(5),
+                                        color: Colors.grey[200],
+                                        child: Column(
+                                          mainAxisSize: MainAxisSize.min,
+                                          children: [
+                                            Text(key),
+                                            Text(data[key].toString() + '%'),
+                                          ],
+                                        ),
+                                      );
+                                    }),
+                              );
+                            }
+                          }
+                        }),
                   ],
                 ),
               )
@@ -135,26 +175,36 @@ class MainPage extends GetWidget<MainController> {
 
   @override
   Widget build(BuildContext context) {
-    return Obx(
-      () => SafeArea(
-        child: Scaffold(
-          body: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 20),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                ..._renderAppBar(),
-                const SizedBox(height: 20),
-                if (controller.isSettingMode.value)
-                  ..._renderSettingWidgets()
-                else
-                  ..._renderDataTable(),
-              ],
-            ),
-          ),
-        ),
-      ),
-    );
+    return FutureBuilder(
+        future: controller.init(),
+        builder: (context, asyncSnapshot) {
+          if (asyncSnapshot.connectionState != ConnectionState.done) {
+            return const Center(
+              child: CircularProgressIndicator(),
+            );
+          } else {
+            return Obx(
+              () => SafeArea(
+                child: Scaffold(
+                  body: Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 20),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        ..._renderAppBar(),
+                        const SizedBox(height: 20),
+                        if (controller.isSettingMode.value)
+                          ..._renderSettingWidgets()
+                        else
+                          ..._renderDataTable(),
+                      ],
+                    ),
+                  ),
+                ),
+              ),
+            );
+          }
+        });
   }
 
   Widget _autoSettingButton() => Row(

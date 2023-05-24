@@ -22,10 +22,19 @@ class MotorSettingData {
       _$MotorSettingDataFromJson(json);
   Map<String, dynamic> toJson() => _$MotorSettingDataToJson(this);
 
-  Map<String, dynamic> toJsonForRTDB() {
+  Map<String, dynamic> toRTDB() {
     Map<String, dynamic> json = _$MotorSettingDataToJson(this);
-    json['workingTime'] = ParseTime.forRTDB(workingTime);
-    json['periodTime'] = ParseTime.forRTDB(periodTime);
+    json['workingTime'] = ParseTime.toRTDB(workingTime);
+    json['periodTime'] = ParseTime.toRTDB(periodTime);
     return json;
+  }
+
+  static MotorSettingData fromRTDB(Map<String, dynamic> json) {
+    json['workingTime'] =
+        ParseTime.fromRTDB(json['workingTime']).toIso8601String();
+    json['periodTime'] =
+        ParseTime.fromRTDB(json['periodTime']).toIso8601String();
+    MotorSettingData fromJson = _$MotorSettingDataFromJson(json);
+    return fromJson;
   }
 }

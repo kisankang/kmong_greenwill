@@ -1,35 +1,28 @@
 import 'package:get/get.dart';
 import 'package:greenwillmanager/data/models/led_setting_data.dart';
 import 'package:greenwillmanager/data/models/motor_setting_data.dart';
+import 'package:greenwillmanager/data/repositories/firebase_repository.dart';
 import 'package:greenwillmanager/data/services/firebase_service.dart';
+import 'package:greenwillmanager/data/services/local_service.dart';
+import 'package:greenwillmanager/routes/app_pages.dart';
+import 'package:greenwillmanager/utils/init_value.dart';
 
 class MainController extends GetxController {
   FirebaseService _firebaseService;
-  MainController({required FirebaseService firebaseService})
-      : _firebaseService = firebaseService;
-
-  late Map<String, dynamic> tempMapData;
-  late Map<String, dynamic> humMapData;
+  FirebaseRepository firebaseRepository;
+  LocalService _localService;
+  MainController(
+      {required FirebaseService firebaseService,
+      required this.firebaseRepository,
+      required LocalService localService})
+      : _firebaseService = firebaseService,
+        _localService = localService;
 
   Rx<bool> isSettingMode = true.obs;
   Rx<bool> isLedSettingMode = true.obs;
 
-  Rx<LedSettingData> ledSettingData = Rx(LedSettingData(
-    isAuto: false,
-    isOn: false,
-    startTime: DateTime.now().copyWith(hour: 0, minute: 0),
-    endTime: DateTime.now().copyWith(hour: 0, minute: 0),
-    brightness: 50,
-    isWrite: 1,
-  ));
-
-  Rx<MotorSettingData> motorSettingData = Rx(MotorSettingData(
-    isAuto: false,
-    isOn: false,
-    periodTime: DateTime.now().copyWith(hour: 0, minute: 0),
-    workingTime: DateTime.now().copyWith(hour: 0, minute: 0),
-    isWrite: 1,
-  ));
+  late Rx<LedSettingData> ledSettingData;
+  late Rx<MotorSettingData> motorSettingData;
 
   onTapSendButton() {
     isLedSettingMode.value
@@ -107,22 +100,46 @@ class MainController extends GetxController {
     });
   }
 
-  Map<String, dynamic> _sortMap(Map<String, dynamic> mapData) {
-    List<MapEntry<String, dynamic>> listMappedEntries =
-        mapData.entries.toList();
+  Map<String, dynamic>? sortMap(Map<String, dynamic>? mapData) {
+    if (mapData != null) {
+      List<MapEntry<String, dynamic>> listMappedEntries =
+          mapData.entries.toList();
 
-    listMappedEntries.sort((a, b) => b.key.compareTo(a.key));
+      listMappedEntries.sort((a, b) => b.key.compareTo(a.key));
 
-    final Map<String, dynamic> sortedMapData =
-        Map.fromEntries(listMappedEntries);
+      final Map<String, dynamic> sortedMapData =
+          Map.fromEntries(listMappedEntries);
 
-    return sortedMapData;
+      return sortedMapData;
+    } else {
+      return null;
+    }
   }
 
-  @override
-  Future<void> onInit() async {
-    super.onInit();
-    tempMapData = _sortMap(await _firebaseService.getTempData());
-    humMapData = _sortMap(await _firebaseService.getHumData());
+  _initSettingData() async {
+    LedSettingData? led = await _firebaseService.getLedSetting();
+    MotorSettingData? motor = await _firebaseService.getMotorSetting();
+    if (led == null) {
+      ledSettingData = Rx(InitialValue.ledSettingData);
+      await _firebaseService.sendLedSetting(ledSettingData.value);
+    } else {
+      ledSettingData = Rx(led);
+    }
+    if (motor == null) {
+      motorSettingData = Rx(InitialValue.motorSettingData);
+      await _firebaseService.sendMotorSetting(motorSettingData.value);
+    } else {
+      motorSettingData = Rx(motor);
+    }
+  }
+
+  Future<bool> init() async {
+    await _initSettingData();
+    return true;
+  }
+
+  onPressBackButton() async {
+    await _localService.deleteId();
+    Get.offAndToNamed(Routes.LOGIN);
   }
 }
